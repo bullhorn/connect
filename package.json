@@ -1,6 +1,6 @@
 {
-  "name": "@bullhorn/app-bridge",
-  "version": "0.0.0",
+  "name": "@bullhorn/connect",
+  "version": "0.0.0-development",
   "description": "Connector for intercommunication between bullhorn apps",
   "main": "lib/index.cjs.js",
   "module": "lib/index.esm.js",
@@ -8,7 +8,7 @@
   "typings": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bullhorn/app-bridge.git"
+    "url": "https://github.com/bullhorn/connect.git"
   },
   "keywords": [
     "Bullhorn"
@@ -16,9 +16,9 @@
   "author": "Brian Kimball <bvkimball@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bullhorn/app-bridge/issues"
+    "url": "https://github.com/bullhorn/connect/issues"
   },
-  "homepage": "https://github.com/bullhorn/app-bridge#readme",
+  "homepage": "https://github.com/bullhorn/connect#readme",
   "dependencies": {
     "post-robot": "^8.0.15",
     "rxjs": "^5.5.6"
@@ -37,7 +37,7 @@
     "rollup-plugin-sourcemaps": "^0.4.0",
     "rollup-plugin-typescript2": "^0.10.0",
     "rollup-plugin-uglify": "^2.0.0",
-    "semantic-release": "^12.2.2",
+    "semantic-release": "^12.4.1",
     "temp-dir": "^1.0.0",
     "ts-jest": "^22.0.0",
     "ts-node": "~4.1.0",
@@ -45,7 +45,7 @@
     "tslint": "~5.9.0",
     "typedoc": "^0.9.0",
     "typescript": "~2.6.x",
-    "travis-deploy-once": "^4.3.2"
+    "travis-deploy-once": "^4.3.3"
   },
   "scripts": {
     "build": "npm run clean && rollup -c",
@@ -55,7 +55,7 @@
     "test:watch": "jest --config jest.config.json --watch",
     "posttest": "npm run lint",
     "semantic-release": "semantic-release",
-    "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs && cp ./taurus-banner.gif ./docs && opn docs/index.html",
+    "docs": "typedoc src/index.ts --excludePrivate --mode file --out docs",
     "travis-deploy-once": "travis-deploy-once"
   }
 }

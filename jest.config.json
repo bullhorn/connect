@@ -12,5 +12,8 @@
       "ts",
       "tsx",
       "js"
-    ]
+		],
+		"globals": {
+      "postRobot": true
+    }
   }

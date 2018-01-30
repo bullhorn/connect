@@ -1,2 +1,3 @@
-# app-bridge
+# Bullhorn Connect
+
 Connector for intercommunication between bullhorn apps

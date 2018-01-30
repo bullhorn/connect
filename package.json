@@ -9,6 +9,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/bullhorn/connect.git"
+	},
+	"publishConfig": {
+    "access": "public"
   },
   "keywords": [
     "Bullhorn"

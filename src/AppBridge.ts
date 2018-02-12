@@ -474,8 +474,8 @@ export class AppBridge {
      * @param packet any - packet of data to send with the event
      */
     public register(packet: Partial<{ title: string, url: string, color: string }> = {}): Promise<string> {
-        Object.assign(packet, { id: this.id, windowName: this.windowName || window.name });
         return new Promise<string>((resolve, reject) => {
+            Object.assign(packet, { id: this.id, windowName: this.windowName || window.name });
             if (this._handlers[AppBridgeHandler.REGISTER]) {
                 this._handlers[AppBridgeHandler.REGISTER](packet, (windowName: string) => {
                     if (windowName) {

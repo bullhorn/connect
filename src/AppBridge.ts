@@ -114,7 +114,6 @@ export class AppBridge {
             this._trace(MESSAGE_TYPES.REGISTER, event);
             this._registeredFrames.push(event);
             return this.register(event.data).then(windowName => {
-                this.windowName = windowName;
                 return { windowName };
             });
         });
@@ -474,8 +473,8 @@ export class AppBridge {
      * @param packet any - packet of data to send with the event
      */
     public register(packet: Partial<{ title: string, url: string, color: string }> = {}): Promise<string> {
+        Object.assign(packet, { id: this.id });
         return new Promise<string>((resolve, reject) => {
-            Object.assign(packet, { id: this.id, windowName: this.windowName || window.name });
             if (this._handlers[AppBridgeHandler.REGISTER]) {
                 this._handlers[AppBridgeHandler.REGISTER](packet, (windowName: string) => {
                     if (windowName) {

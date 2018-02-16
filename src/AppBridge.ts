@@ -225,7 +225,6 @@ export class AppBridge {
      * @param packet any - packet of data to send with the open event
      */
     public open(packet: IAppBridgeOpenEvent): Promise<boolean> {
-        Object.assign(packet, { id: this.id, windowName: this.windowName });
         return new Promise<boolean>((resolve, reject) => {
             if (this._handlers[AppBridgeHandler.OPEN]) {
                 this._handlers[AppBridgeHandler.OPEN](packet, (success: boolean) => {
@@ -236,6 +235,7 @@ export class AppBridge {
                     }
                 });
             } else {
+                Object.assign(packet, { id: this.id, windowName: this.windowName });
                 postRobot.sendToParent(MESSAGE_TYPES.OPEN, packet).then((event) => {
                     this._trace(`${MESSAGE_TYPES.OPEN} (callback)`, event);
                     if (event.data) {
@@ -413,7 +413,6 @@ export class AppBridge {
     * @param packet any - packet of data to send with the requestData event
     */
     public requestData(packet: { type: string }): Promise<any> {
-        Object.assign(packet, { id: this.id, windowName: this.windowName });
         return new Promise<any>((resolve, reject) => {
             if (this._handlers[AppBridgeHandler.REQUEST_DATA]) {
                 this._handlers[AppBridgeHandler.REQUEST_DATA](packet, (data: any) => {
@@ -424,6 +423,7 @@ export class AppBridge {
                     }
                 });
             } else {
+                Object.assign(packet, { id: this.id, windowName: this.windowName });
                 postRobot.sendToParent(MESSAGE_TYPES.REQUEST_DATA, packet).then((event) => {
                     this._trace(`${MESSAGE_TYPES.REQUEST_DATA} (callback)`, event);
                     if (event.data) {
@@ -443,7 +443,6 @@ export class AppBridge {
      * @param packet string - key: string, generic: boolean
      */
     public callback(packet: { key: string, generic: boolean, options: object }): Promise<any> {
-        Object.assign(packet, { id: this.id, windowName: this.windowName });
         return new Promise<any>((resolve, reject) => {
             if (this._handlers[AppBridgeHandler.CALLBACK]) {
                 this._handlers[AppBridgeHandler.CALLBACK](packet, (success: boolean) => {
@@ -454,6 +453,7 @@ export class AppBridge {
                     }
                 });
             } else {
+                Object.assign(packet, { id: this.id, windowName: this.windowName });
                 postRobot.sendToParent(MESSAGE_TYPES.CALLBACK, packet).then((event) => {
                     this._trace(`${MESSAGE_TYPES.CALLBACK} (callback)`, event);
                     if (event.data) {
@@ -473,7 +473,6 @@ export class AppBridge {
      * @param packet any - packet of data to send with the event
      */
     public register(packet: Partial<{ title: string, url: string, color: string }> = {}): Promise<string> {
-        Object.assign(packet, { id: this.id });
         return new Promise<string>((resolve, reject) => {
             if (this._handlers[AppBridgeHandler.REGISTER]) {
                 this._handlers[AppBridgeHandler.REGISTER](packet, (windowName: string) => {
@@ -484,6 +483,7 @@ export class AppBridge {
                     }
                 });
             } else {
+                Object.assign(packet, { id: this.id });
                 postRobot.sendToParent(MESSAGE_TYPES.REGISTER, packet).then((event) => {
                     this._trace(`${MESSAGE_TYPES.REGISTER} (callback)`, event);
                     if (event.data) {

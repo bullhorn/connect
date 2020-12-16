@@ -1,8 +1,4 @@
-on:
-  push:
-    branches:
-      - 'master'
-      - 'f/actions'
+on: push
 name: Build
 jobs:
   build:
@@ -25,7 +21,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Build and Package
+      - name: Build
         run: |
           npm ci
           npm run build
+      - name: Deploy
+        - run: npm run semantic-release
+          if: ${{ github.ref == 'refs/heads/master' }}

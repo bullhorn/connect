@@ -27,4 +27,7 @@ jobs:
         run: npm run build
       - name: Deploy
         if: ${{ github.ref == 'refs/heads/master' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm run semantic-release

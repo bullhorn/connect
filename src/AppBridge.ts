@@ -266,7 +266,7 @@ export class AppBridge {
                 });
             } else {
                 let openListPacket = {};
-                Object.assign(openListPacket, { type: 'List', entityType: packet.type, keywords: packet.keywords, criteria: packet.criteria });        
+                Object.assign(openListPacket, { type: 'List', entityType: packet.type, keywords: packet.keywords, criteria: packet.criteria });
                 postRobot.sendToParent(MESSAGE_TYPES.OPEN_LIST, packet).then((event) => {
                     this._trace(`${MESSAGE_TYPES.OPEN_LIST} (callback)`, event);
                     if (event.data) {
@@ -329,7 +329,7 @@ export class AppBridge {
                 if (packet) {
                     console.info('[AppBridge] - close(packet) is deprecated! Please just use close()!'); // tslint:disable-line
                 }
-                let realPacket = { id: this.id, windowName: this.windowName };        
+                let realPacket = { id: this.id, windowName: this.windowName };
                 postRobot.sendToParent(MESSAGE_TYPES.CLOSE, realPacket).then((event) => {
                     this._trace(`${MESSAGE_TYPES.CLOSE} (callback)`, event);
                     if (event.data) {
@@ -393,7 +393,7 @@ export class AppBridge {
                 if (packet) {
                     console.info('[AppBridge] - pin(packet) is deprecated! Please just use pin()!'); // tslint:disable-line
                 }
-                let realPacket = { id: this.id, windowName: this.windowName };        
+                let realPacket = { id: this.id, windowName: this.windowName };
                 postRobot.sendToParent(MESSAGE_TYPES.PIN, realPacket).then((event) => {
                     this._trace(`${MESSAGE_TYPES.PIN} (callback)`, event);
                     if (event.data) {
@@ -604,11 +604,25 @@ export class AppBridge {
         if (this._registeredFrames.length > 0) {
             this._registeredFrames.forEach(frame => {
                 postRobot.send(frame.source, MESSAGE_TYPES.CUSTOM_EVENT, {
+                    event: event,
                     eventType: event,
                     data: data
                 });
             });
         }
+    }
+
+    /**
+     * Fires a custom event to specified frames
+     * @param source Window - specific iframe contentWindow
+     * @param event string - event name to fire
+     * @param data any - data to be sent along with the event
+     */
+    public fireEventToChild(source: Window | HTMLIFrameElement, event: string, data: any): void {
+        if (source instanceof HTMLIFrameElement) {
+            source = source.contentWindow;
+        }
+        postRobot.send(source, MESSAGE_TYPES.CUSTOM_EVENT, { event, data });
     }
 
     /**

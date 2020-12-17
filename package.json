@@ -53,7 +53,6 @@
     "build": "npm run clean && rollup -c",
     "clean": "rm -rf lib",
     "lint": "tslint --project tsconfig.json --format stylish",
-    "test": "jest --config jest.config.json --coverage --no-cache --runInBand",
     "test:watch": "jest --config jest.config.json --watch",
     "posttest": "npm run lint",
     "semantic-release": "semantic-release",

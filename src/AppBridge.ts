@@ -9,7 +9,8 @@ export enum AppBridgeHandler {
     REGISTER,
     UPDATE,
     REQUEST_DATA,
-    CALLBACK
+    CALLBACK,
+    PING
 }
 
 export type NovoApps = 'record' | 'add' | 'fast-add' | 'custom';
@@ -53,6 +54,7 @@ const MESSAGE_TYPES = {
     CLOSE: 'close',
     REFRESH: 'refresh',
     PIN: 'pin',
+    PING: 'ping',
     UPDATE: 'update',
     HTTP_GET: 'httpGET',
     HTTP_POST: 'httpPOST',
@@ -160,6 +162,13 @@ export class AppBridge {
             this._trace(MESSAGE_TYPES.PIN, event);
             return this.pin(event.data).then(success => {
                 return { success };
+            });
+        });
+        // PING
+        postRobot.on(MESSAGE_TYPES.PING, (event) => {
+            this._trace(MESSAGE_TYPES.PING, event);
+            return this.httpGET('ping').then(result => {
+                return { data: result.data, error: result.error };
             });
         });
         // REQUEST_DATA

@@ -385,6 +385,22 @@ export class AppBridge {
         });
     }
 
+    public ping(): Promise<boolean> {
+        return new Promise<any>((resolve, reject) => {
+            if (this._handlers[AppBridgeHandler.PING]) {
+                this._handlers[AppBridgeHandler.PING]({}, (data: any, error: any) => {
+                    resolve({ data, error });
+                });
+            } else {
+                postRobot.sendToParent(MESSAGE_TYPES.PING, {}).then((event: any) => {
+                    resolve({ data: event.data.data, error: event.data.error });
+                }).catch((err) => {
+                    reject(null);
+                });
+            }
+        });
+    }
+
     /**
      * Fires or responds to a pin event
      */

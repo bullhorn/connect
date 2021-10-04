@@ -13,7 +13,38 @@ export enum AppBridgeHandler {
     PING
 }
 
-export type NovoApps = 'record' | 'add' | 'fast-add' | 'custom';
+// record       - an individual entity record
+// add/fast-add - the add page for a new record
+// custom       - custom action that opens the url provided in data.url
+// preview      - the preview slideout available only in Novo
+export type NovoApps = 'record' | 'add' | 'fast-add' | 'custom' | 'preview';
+
+export type AlleyLinkColors =
+  | 'purple'
+  | 'green'
+  | 'blue'
+  | 'lead'
+  | 'candidate'
+  | 'contact'
+  | 'company'
+  | 'opportunity'
+  | 'job'
+  | 'billable-charge'
+  | 'earn-code'
+  | 'invoice-statement'
+  | 'job-code'
+  | 'payable-charge'
+  | 'sales-tax-rate'
+  | 'tax-rules'
+  | 'submission'
+  | 'placement'
+  | 'navigation'
+  | 'canvas'
+  | 'neutral'
+  | 'neutral-italic'
+  | 'initial'
+  | 'distributionList'
+  | 'contract';
 
 export interface IAppBridgeOpenEvent {
     type: NovoApps;
@@ -24,9 +55,16 @@ export interface IAppBridgeOpenEvent {
     passthrough?: string;
 }
 
-export type MosaicLists = 'Candidate' | 'ClientContact' | 'ClientCorporation' |
-    'JobOrder' | 'JobSubmission' | 'JobPosting' | 'Placement' | 'Lead' |
-    'Opportunity';
+export type MosaicLists =
+  | 'Candidate'
+  | 'ClientContact'
+  | 'ClientCorporation'
+  | 'JobOrder'
+  | 'JobSubmission'
+  | 'JobPosting'
+  | 'Placement'
+  | 'Lead'
+  | 'Opportunity';
 
 export interface IAppBridgeOpenListEvent {
     type: MosaicLists;
@@ -44,7 +82,7 @@ const HTTP_VERBS = {
     GET: 'get',
     POST: 'post',
     PUT: 'put',
-    DELETE: 'delete'
+  DELETE: 'delete',
 };
 
 const MESSAGE_TYPES = {
@@ -62,7 +100,7 @@ const MESSAGE_TYPES = {
     HTTP_DELETE: 'httpDELETE',
     CUSTOM_EVENT: 'customEvent',
     REQUEST_DATA: 'requestData',
-    CALLBACK: 'callback'
+  CALLBACK: 'callback',
 };
 
 declare const postRobot: any;
@@ -78,7 +116,7 @@ export class AppBridge {
     public traceName: string;
     public windowName: string;
 
-    private _registeredFrames: any[] = [];
+  private _registeredFrames = [];
     private _handlers = {};
     private _tracing: boolean = false;
     private _eventListeners: any = {};
@@ -245,14 +283,17 @@ export class AppBridge {
                 });
             } else {
                 Object.assign(packet, { id: this.id, windowName: this.windowName });
-                postRobot.sendToParent(MESSAGE_TYPES.OPEN, packet).then((event) => {
+        postRobot
+          .sendToParent(MESSAGE_TYPES.OPEN, packet)
+          .then((event) => {
                     this._trace(`${MESSAGE_TYPES.OPEN} (callback)`, event);
                     if (event.data) {
                         resolve(true);
                     } else {
                         reject(false);
                     }
-                }).catch((err) => {
+          })
+          .catch((err) => {
                     reject(false);
                 });
             }
@@ -274,28 +315,32 @@ export class AppBridge {
                     }
                 });
             } else {
-                let openListPacket = {};
+                const openListPacket = {};
                 Object.assign(openListPacket, { type: 'List', entityType: packet.type, keywords: packet.keywords, criteria: packet.criteria });
-                postRobot.sendToParent(MESSAGE_TYPES.OPEN_LIST, packet).then((event) => {
+        postRobot
+          .sendToParent(MESSAGE_TYPES.OPEN_LIST, packet)
+          .then((event) => {
                     this._trace(`${MESSAGE_TYPES.OPEN_LIST} (callback)`, event);
                     if (event.data) {
                         resolve(true);
                     } else {
                         reject(false);
                     }
-                }).catch((err) => {
+          })
+          .catch((err) => {
                     reject(false);
                 });
             }
         });
     }
 
-
     /**
      * Fires or responds to an close event
      * @param packet any - packet of data to send with the close event
      */
-    public update(packet: Partial<{ entityType: string, entityId: string, title: string, titleKey: string, color: string }>): Promise<boolean> {
+  public update(
+    packet: Partial<{ entityType: string; entityId: string; title: string; titleKey: string; color: AlleyLinkColors }>,
+  ): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             if (this._handlers[AppBridgeHandler.UPDATE]) {
                 this._handlers[AppBridgeHandler.UPDATE](packet, (success: boolean) => {
@@ -307,14 +352,17 @@ export class AppBridge {
                 });
             } else {
                 Object.assign(packet, { id: this.id, windowName: this.windowName });
-                postRobot.sendToParent(MESSAGE_TYPES.UPDATE, packet).then((event) => {
+        postRobot
+          .sendToParent(MESSAGE_TYPES.UPDATE, packet)
+          .then((event) => {
                     this._trace(`${MESSAGE_TYPES.UPDATE} (callback)`, event);
                     if (event.data) {
                         resolve(true);
                     } else {
                         reject(false);
                     }
-                }).catch((err) => {
+          })
+          .catch((err) => {
                     reject(false);
                 });
             }
@@ -338,15 +386,18 @@ export class AppBridge {
                 if (packet) {
                     console.info('[AppBridge] - close(packet) is deprecated! Please just use close()!'); // tslint:disable-line
                 }
-                let realPacket = { id: this.id, windowName: this.windowName };
-                postRobot.sendToParent(MESSAGE_TYPES.CLOSE, realPacket).then((event) => {
+        const realPacket = { id: this.id, windowName: this.windowName };
+        postRobot
+          .sendToParent(MESSAGE_TYPES.CLOSE, realPacket)
+          .then((event) => {
                     this._trace(`${MESSAGE_TYPES.CLOSE} (callback)`, event);
                     if (event.data) {
                         resolve(true);
                     } else {
                         reject(false);
                     }
-                }).catch((err) => {
+          })
+          .catch((err) => {
                     reject(false);
                 });
             }
@@ -370,15 +421,18 @@ export class AppBridge {
                 if (packet) {
                     console.info('[AppBridge] - refresh(packet) is deprecated! Please just use refresh()!'); // tslint:disable-line
                 }
-                let realPacket = { id: this.id, windowName: this.windowName };
-                postRobot.sendToParent(MESSAGE_TYPES.REFRESH, realPacket).then((event) => {
+        const realPacket = { id: this.id, windowName: this.windowName };
+        postRobot
+          .sendToParent(MESSAGE_TYPES.REFRESH, realPacket)
+          .then((event) => {
                     this._trace(`${MESSAGE_TYPES.REFRESH} (callback)`, event);
                     if (event.data) {
                         resolve(true);
                     } else {
                         reject(false);
                     }
-                }).catch((err) => {
+          })
+          .catch((err) => {
                     reject(false);
                 });
             }
@@ -418,15 +472,18 @@ export class AppBridge {
                 if (packet) {
                     console.info('[AppBridge] - pin(packet) is deprecated! Please just use pin()!'); // tslint:disable-line
                 }
-                let realPacket = { id: this.id, windowName: this.windowName };
-                postRobot.sendToParent(MESSAGE_TYPES.PIN, realPacket).then((event) => {
+        const realPacket = { id: this.id, windowName: this.windowName };
+        postRobot
+          .sendToParent(MESSAGE_TYPES.PIN, realPacket)
+          .then((event) => {
                     this._trace(`${MESSAGE_TYPES.PIN} (callback)`, event);
                     if (event.data) {
                         resolve(true);
                     } else {
                         reject(false);
                     }
-                }).catch((err) => {
+          })
+          .catch((err) => {
                     reject(false);
                 });
             }
@@ -449,14 +506,17 @@ export class AppBridge {
                 });
             } else {
                 Object.assign(packet, { id: this.id, windowName: this.windowName });
-                postRobot.sendToParent(MESSAGE_TYPES.REQUEST_DATA, packet).then((event) => {
+        postRobot
+          .sendToParent(MESSAGE_TYPES.REQUEST_DATA, packet)
+          .then((event) => {
                     this._trace(`${MESSAGE_TYPES.REQUEST_DATA} (callback)`, event);
                     if (event.data) {
                         resolve({ data: event.data.data });
                     } else {
                         reject(false);
                     }
-                }).catch((err) => {
+          })
+          .catch((err) => {
                     reject(false);
                 });
             }
@@ -467,7 +527,7 @@ export class AppBridge {
      * Fires a generic callback command
      * @param packet string - key: string, generic: boolean
      */
-    public callback(packet: { key: string, generic: boolean, options: object }): Promise<any> {
+  public callback(packet: { key: string; generic: boolean; options: object }): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             if (this._handlers[AppBridgeHandler.CALLBACK]) {
                 this._handlers[AppBridgeHandler.CALLBACK](packet, (success: boolean) => {
@@ -479,14 +539,17 @@ export class AppBridge {
                 });
             } else {
                 Object.assign(packet, { id: this.id, windowName: this.windowName });
-                postRobot.sendToParent(MESSAGE_TYPES.CALLBACK, packet).then((event) => {
+        postRobot
+          .sendToParent(MESSAGE_TYPES.CALLBACK, packet)
+          .then((event) => {
                     this._trace(`${MESSAGE_TYPES.CALLBACK} (callback)`, event);
                     if (event.data) {
                         resolve(true);
                     } else {
                         reject(false);
                     }
-                }).catch((err) => {
+          })
+          .catch((err) => {
                     reject(false);
                 });
             }
@@ -497,7 +560,7 @@ export class AppBridge {
      * Fires or responds to an register event
      * @param packet any - packet of data to send with the event
      */
-    public register(packet: Partial<{ title: string, url: string, color: string }> = {}): Promise<string> {
+  public register(packet: Partial<{ title: string; url: string; color: AlleyLinkColors }> = {}): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             if (this._handlers[AppBridgeHandler.REGISTER]) {
                 this._handlers[AppBridgeHandler.REGISTER](packet, (windowName: string) => {
@@ -509,7 +572,9 @@ export class AppBridge {
                 });
             } else {
                 Object.assign(packet, { id: this.id });
-                postRobot.sendToParent(MESSAGE_TYPES.REGISTER, packet).then((event) => {
+        postRobot
+          .sendToParent(MESSAGE_TYPES.REGISTER, packet)
+          .then((event) => {
                     this._trace(`${MESSAGE_TYPES.REGISTER} (callback)`, event);
                     if (event.data) {
                         this.windowName = event.data.windowName;
@@ -517,9 +582,10 @@ export class AppBridge {
                     } else {
                         resolve(null);
                     }
-                }).catch((err) => {
+          })
+          .catch((err) => {
                     this._trace(`${MESSAGE_TYPES.REGISTER} - FAILED - (no parent)`, err);
-                    resolve(null);
+            reject(err);
                 });
             }
         });
@@ -529,16 +595,19 @@ export class AppBridge {
      * Fires or responds to an HTTP_GET event
      * @param packet any - packet of data to send with the event
      */
-    public httpGET(relativeURL: string): Promise<any> {
+  public httpGET(relativeURL: string, timeout: number = 10000): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             if (this._handlers[AppBridgeHandler.HTTP]) {
-                this._handlers[AppBridgeHandler.HTTP]({ verb: HTTP_VERBS.GET, relativeURL: relativeURL }, (data: any, error: any) => {
+        this._handlers[AppBridgeHandler.HTTP]({ verb: HTTP_VERBS.GET, relativeURL }, (data: any, error: any) => {
                     resolve({ data, error });
                 });
             } else {
-                postRobot.sendToParent(MESSAGE_TYPES.HTTP_GET, { relativeURL }).then((event: any) => {
+        postRobot
+          .sendToParent(MESSAGE_TYPES.HTTP_GET, { relativeURL }, { timeout })
+          .then((event: any) => {
                     resolve({ data: event.data.data, error: event.data.error });
-                }).catch((err) => {
+          })
+          .catch((err) => {
                     reject(null);
                 });
             }
@@ -549,16 +618,19 @@ export class AppBridge {
      * Fires or responds to an HTTP_POST event
      * @param packet any - packet of data to send with the event
      */
-    public httpPOST(relativeURL: string, postData: any): Promise<any> {
+  public httpPOST(relativeURL: string, postData: any, timeout: number = 10000): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             if (this._handlers[AppBridgeHandler.HTTP]) {
-                this._handlers[AppBridgeHandler.HTTP]({ verb: HTTP_VERBS.POST, relativeURL: relativeURL, data: postData }, (data: any, error: any) => {
+        this._handlers[AppBridgeHandler.HTTP]({ verb: HTTP_VERBS.POST, relativeURL, data: postData }, (data: any, error: any) => {
                     resolve({ data, error });
                 });
             } else {
-                postRobot.sendToParent(MESSAGE_TYPES.HTTP_POST, { relativeURL: relativeURL, data: postData }).then((event: any) => {
+        postRobot
+          .sendToParent(MESSAGE_TYPES.HTTP_POST, { relativeURL, data: postData }, { timeout })
+          .then((event: any) => {
                     resolve({ data: event.data.data, error: event.data.error });
-                }).catch((err) => {
+          })
+          .catch((err) => {
                     reject(null);
                 });
             }
@@ -569,16 +641,19 @@ export class AppBridge {
      * Fires or responds to an HTTP_PUT event
      * @param packet any - packet of data to send with the event
      */
-    public httpPUT(relativeURL: string, putData: any): Promise<any> {
+  public httpPUT(relativeURL: string, putData: any, timeout: number = 10000): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             if (this._handlers[AppBridgeHandler.HTTP]) {
-                this._handlers[AppBridgeHandler.HTTP]({ verb: HTTP_VERBS.PUT, relativeURL: relativeURL, data: putData }, (data: any, error: any) => {
+        this._handlers[AppBridgeHandler.HTTP]({ verb: HTTP_VERBS.PUT, relativeURL, data: putData }, (data: any, error: any) => {
                     resolve({ data, error });
                 });
             } else {
-                postRobot.sendToParent(MESSAGE_TYPES.HTTP_PUT, { relativeURL: relativeURL, data: putData }).then((event: any) => {
+        postRobot
+          .sendToParent(MESSAGE_TYPES.HTTP_PUT, { relativeURL, data: putData }, { timeout })
+          .then((event: any) => {
                     resolve({ data: event.data.data, error: event.data.error });
-                }).catch((err) => {
+          })
+          .catch((err) => {
                     reject(null);
                 });
             }
@@ -589,16 +664,19 @@ export class AppBridge {
      * Fires or responds to an HTTP_DELETE event
      * @param packet any - packet of data to send with the event
      */
-    public httpDELETE(relativeURL: string): Promise<any> {
+  public httpDELETE(relativeURL: string, timeout: number = 10000): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             if (this._handlers[AppBridgeHandler.HTTP]) {
-                this._handlers[AppBridgeHandler.HTTP]({ verb: HTTP_VERBS.DELETE, relativeURL: relativeURL }, (data: any, error: any) => {
+        this._handlers[AppBridgeHandler.HTTP]({ verb: HTTP_VERBS.DELETE, relativeURL }, (data: any, error: any) => {
                     resolve({ data, error });
                 });
             } else {
-                postRobot.sendToParent(MESSAGE_TYPES.HTTP_DELETE, { relativeURL }).then((event: any) => {
+        postRobot
+          .sendToParent(MESSAGE_TYPES.HTTP_DELETE, { relativeURL }, { timeout })
+          .then((event: any) => {
                     resolve({ data: event.data.data, error: event.data.error });
-                }).catch((err) => {
+          })
+          .catch((err) => {
                     reject(null);
                 });
             }
@@ -612,9 +690,12 @@ export class AppBridge {
      */
     public fireEvent(event: string, data: any): Promise<any> {
         return new Promise<any>((resolve, reject) => {
-            postRobot.sendToParent(MESSAGE_TYPES.CUSTOM_EVENT, { event, data }).then((e: any) => {
+      postRobot
+        .sendToParent(MESSAGE_TYPES.CUSTOM_EVENT, { event, data })
+        .then((e: any) => {
                 resolve(e);
-            }).catch((err) => {
+        })
+        .catch((err) => {
                 reject(null);
             });
         });
@@ -631,7 +712,7 @@ export class AppBridge {
                 postRobot.send(frame.source, MESSAGE_TYPES.CUSTOM_EVENT, {
                     event: event,
                     eventType: event,
-                    data: data
+          data,
                 });
             });
         }
@@ -662,4 +743,3 @@ export class AppBridge {
         this._eventListeners[event].push(callback);
     }
 }
-
